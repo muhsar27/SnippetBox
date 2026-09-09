@@ -29,14 +29,22 @@ func snippetCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Creating something something"))
 }
 
+func snippetCreatePost(w http.ResponseWriter, r *http.Request) {
+	//201 represents created
+	w.Header().Add("Server", "Go")
+
+	w.Write([]byte("Saves a new snippet"))
+}
+
 func main() {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/{$}", home)
+	mux.HandleFunc("GET /{$}", home)
 	//including url parameters
-	mux.HandleFunc("/snippet/view/{id}", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
-
+	mux.HandleFunc("GET /snippet/view/{id}", snippetView)
+	mux.HandleFunc("GET /snippet/create", snippetCreate)
+	mux.HandleFunc("POST /snippet/create", snippetCreatePost)
+	//specifying the http method
 	log.Println("Server starting on :4000")
 
 	//ListenAndServe starts our server and binds it to the address specified
