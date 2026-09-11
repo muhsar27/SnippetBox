@@ -22,7 +22,7 @@ func main() {
 	log.Println("Server starting on :4000")
 
 	//ListenAndServe starts our server and binds it to the address specified
-	err := http.ListenAndServe(":4000", mux)
+	err := http.ListenAndServe("4000", mux)
 	//logs an error if err is non-nil
 	log.Fatal(err)
 }
