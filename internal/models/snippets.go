@@ -2,22 +2,23 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
-type Snippet struct{
-	ID int 
-	Title string
+type Snippet struct {
+	ID      int
+	Title   string
 	Content string
 	Created time.Time
-	Expires	time.Time
+	Expires time.Time
 }
 
-type SnippetModel struct{
+type SnippetModel struct {
 	DB *sql.DB
 }
 
-func (m *SnippetModel) Insert (title string, content string, expires int)(int, error){
+func (m *SnippetModel) Insert(title string, content string, expires int) (int, error) {
 	stmt := `INSERT INTO snippets (title, content, created, expires)
 			VALUES(?, ?, UTC_TIMESTAMP(), DATE_ADD(UTC_TIMESTAMP(), INTERVAL ? DAY))`
 
@@ -31,15 +32,29 @@ func (m *SnippetModel) Insert (title string, content string, expires int)(int, e
 		return 0, err
 	}
 
-
-
-	return int(id) , nil 
+	return int(id), nil
 }
 
-func (m *SnippetModel) Get (id  int) (Snippet, error){
-	return Snippet{}, nil 
+func (m *SnippetModel) Get(id int) (Snippet, error) {
+
+	stmt := `SELECT id, title, content, expires FROM snippets
+	WHERE expires > UTC_TIMESTAMP() AND id = ?`
+
+	row := m.DB.QueryRow(stmt, id)
+
+	var s Snippet
+
+	err := row.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return Snippet{}, ErrNoRecord
+		} else {
+			return Snippet{}, err
+		}
+	}
+	return s, nil
 }
 
-func (m *SnippetModel) Latest()([]Snippet, error){
-	return nil, nil 
+func (m *SnippetModel) Latest() ([]Snippet, error) {
+	return nil, nil
 }
