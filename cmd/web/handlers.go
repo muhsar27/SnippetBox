@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 
@@ -13,30 +12,40 @@ import (
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Server", "Go")
 
-	files := []string{
-		"ui/html/base.tmpl.html",
-		"ui/html/partials/nav.tmpl.html",
-		"ui/html/pages/home.tmpl.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-
+	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
 
-	err = ts.ExecuteTemplate(w, "base", nil)
-
-	if err != nil {
-		app.serverError(w, r, err)
+	for _, snippet := range snippets {
+		fmt.Fprintf(w, "%+v\n", snippet)
 	}
-	w.Write([]byte("Hello from SnippetBox"))
+
+	// files := []string{
+	// 	"ui/html/base.tmpl.html",
+	// 	"ui/html/partials/nav.tmpl.html",
+	// 	"ui/html/pages/home.tmpl.html",
+	// }
+
+	// ts, err := template.ParseFiles(files...)
+
+	// if err != nil {
+	// 	app.serverError(w, r, err)
+	// 	return
+	// }
+
+	// err = ts.ExecuteTemplate(w, "base", nil)
+
+	// if err != nil {
+	// 	app.serverError(w, r, err)
+	// }
+
 }
 
 // Displays a snippet
 func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
-	//http.ServeFile(w, r, "./ui/html/base.tmpl.html")
+
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil || id < 1 {
 		http.NotFound(w, r)
@@ -45,12 +54,12 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 
 	snippet, err := app.snippets.Get(id)
 	if err != nil {
-		if errors.Is(err, models.ErrNoRecord){
+		if errors.Is(err, models.ErrNoRecord) {
 			http.NotFound(w, r)
-		} else{
-			app.serverError(w , r , err)
+		} else {
+			app.serverError(w, r, err)
 		}
-		return 
+		return
 	}
 
 	fmt.Fprintf(w, "%+v", snippet)
@@ -64,14 +73,14 @@ func (app *application) snippetCreate(w http.ResponseWriter, r *http.Request) {
 func (app *application) snippetCreatePost(w http.ResponseWriter, r *http.Request) {
 	title := "0 snail"
 	content := "0 snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n- Kobayashi Issa"
-	expires := 7 
+	expires := 7
 
 	id, err := app.snippets.Insert(title, content, expires)
 	if err != nil {
 		app.serverError(w, r, err)
-		return 
+		return
 	}
-	http.Redirect(w, r , fmt.Sprintf("/snippet/view/%d", id),http.StatusSeeOther)
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 
 	//201 represents created
 	// w.WriteHeader(http.StatusCreated)

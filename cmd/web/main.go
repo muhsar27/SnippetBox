@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/go-sql-driver/mysql"
 	"snippetbox.alexedwards.net/internal/models"
-	_"github.com/go-sql-driver/mysql"
 )
 
 type application struct {
-	logger *slog.Logger
+	logger   *slog.Logger
 	snippets *models.SnippetModel
 }
 
@@ -25,7 +25,7 @@ func main() {
 
 	loggerHandler := slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level:     slog.LevelDebug,
-		AddSource: true,
+		AddSource: false,
 	})
 	logger := slog.New(loggerHandler)
 	//intialising our structured logger
@@ -39,11 +39,11 @@ func main() {
 	defer db.Close()
 
 	app := &application{
-		logger: logger,
-		snippets: &models.SnippetModel{DB:db},
+		logger:   logger,
+		snippets: &models.SnippetModel{DB: db},
 	}
 	//Initialising our instance of the application struct whic currently
-	//stores our structured log format and our models.SnippetMode which contains 
+	//stores our structured log format and our models.SnippetMode which contains
 	//our database connection pool "db"
 
 	//specifying the http method
