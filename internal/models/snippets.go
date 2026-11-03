@@ -89,18 +89,3 @@ func (m *SnippetModel) Latest() ([]Snippet, error) {
 
 	return snippets, nil
 }
-
-type ExampleModel struct {
-	DB *sql.DB
-}
-
-func (m *ExampleModel) ExampleTransaction()error{
-	tx, err := m.DB.Begin()
-	if err != nil {
-		return err 
-	}
-
-	defer tx.Rollback()
-
-	
-}
