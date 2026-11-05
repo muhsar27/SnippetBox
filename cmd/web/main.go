@@ -16,49 +16,6 @@ type application struct {
 	snippets *models.SnippetModel
 }
 
-type ExampleModel struct {
-	DB *sql.DB
-	InsertStmt *sql.Stmt
-}
-
-func NewExampleModel(db *sql.DB) (*ExampleModel, error){
-	insertStmt, err := db.Prepare(`INSERT INTO ...`)
-	if err != nil {
-		return nil , err
-	}
-
-	return &ExampleModel{DB: db, InsertStmt: insertStmt}, nil 
-}
-
-func (m *ExampleModel) Insert(args...any) error{
-	_,err := m.InsertStmt.Exec(args...)
-	
-	return err 
-}
-
-func (m *ExampleModel) ExampleTransaction()error{
-	tx, err := m.DB.Begin()
-	if err != nil {
-		return err 
-	}
-
-	defer tx.Rollback()
-
-	_, err = tx.Exec(`INSERT INTO ...`)
-	if err != nil {
-		return err
-	}
-	
-	_,err = tx.Exec(`UPDATE ...`)
-	if err != nil {
-		return err 
-	}
-
-
-	err = tx.Commit()
-	return err
-}
-
 func main() {
 	//command line flag to specifying the port to be used
 	addr := flag.String("addr", ":4000", "HTTP network address")

@@ -62,29 +62,27 @@ func (m *SnippetModel) Latest() ([]Snippet, error) {
 
 	rows, err := m.DB.Query(stmt)
 	if err != nil {
-		return nil , err 
+		return nil, err
 	}
 
 	defer rows.Close()
-	
-	//Initialising empty struct to hold Snippet structs 
+
+	//Initialising empty struct to hold Snippet structs
 	var snippets []Snippet
 
-	for rows.Next()	{
+	for rows.Next() {
 		var s Snippet
-
 
 		err = rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
 		if err != nil {
-			return nil, err 
+			return nil, err
 		}
 		snippets = append(snippets, s)
-
 
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, err 
+		return nil, err
 	}
 
 	return snippets, nil

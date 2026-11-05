@@ -64,9 +64,9 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	files := []string{
-		"ui/html/base.tmpl.html",
-		"ui/html/partials/nav.tmpl.html",
-		"ui/html/pages/home.tmpl.html",
+		"./ui/html/base.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
+		"./ui/html/pages/view.tmpl.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
@@ -82,7 +82,7 @@ func (app *application) snippetView(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, r, err)
 	}
 
-	fmt.Fprintf(w, "%+v", snippet)
+	// fmt.Fprintf(w, "%+v", snippet)
 }
 
 // Displays a form for creating a snippet
